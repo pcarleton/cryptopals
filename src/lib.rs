@@ -9,6 +9,7 @@ pub enum CryptoError {
     InvalidHexAscii(u8),
     OddHexStringLength(usize),
     MismatchedInputLengths,
+    Utf8(std::str::Utf8Error),
 }
 
 fn ascii_to_bin(i: u8) -> Result<u8> {
@@ -47,7 +48,7 @@ pub fn single_xor(a: &str, k: u8) -> Result<String> {
         result.push(a_hex[i] ^ k);
     }
 
-    let st = std::str::from_utf8(&result).map_err(|_| CryptoError::MismatchedInputLengths)?;
+    let st = std::str::from_utf8(&result).map_err(|e| CryptoError::Utf8(e))?;
 
     Ok(st.to_string())
 }
@@ -93,14 +94,39 @@ fn score_str(input: &str) -> i16 {
     score
 }
 
-pub fn rank_strs<'a>(input: &'a Vec<String>) -> Vec<(i16, &'a String)> {
-    let mut output = Vec::new();
-    for s in input.iter() {
-        output.push((score_str(s), s));
-    }
+pub fn rank_strs<'a>(input: &'a Vec<String>) -> Vec<(i16, String)> {
+    // let mut output = Vec::new();
+    // for s in input.iter() {
+    //     output.push((score_str(s), *s));
+    // }
+
+    let mut output = input.iter().map(|s| (score_str(s), s.clone())).collect::<Vec<_>>();
 
     output.sort_by(|(s1, _), (s2, _)| s2.cmp(&s1));
     output
+}
+
+fn ranked_candidates(input: &str) -> Vec<(i16, String)> {
+    let mut candidates: Vec<String> = Vec::new();
+    for c in 0..255 {
+        let cand = single_xor(input, c as u8);
+        match cand {
+            Ok(s) => candidates.push(s),
+            Err(e) => (),//println!("error on {}: {:?}", c, e),
+        }
+    }
+
+    let ranked = rank_strs(&candidates);
+
+    ranked
+}
+
+pub fn xor_top_n<'a>(input: &'a str, n: usize) -> Vec<(i16, String)> {
+    // let mut top_n: Vec<(i16, String)> = Vec::new();
+
+    let mut ranked = ranked_candidates(input);
+
+    ranked[0..std::cmp::min(ranked.len(), n)].to_vec()
 }
 
 fn score_count(counter: &HashMap<char, i16>) -> i16 {

@@ -15,8 +15,33 @@ fn set_1_3(input: &str) {
     let ranked = cryptopals::rank_strs(&candidates);
 
     for i in 0..5 {
-        let (score, s) = ranked[i];
+        let (score, s) = &ranked[i];
         println!("{} -- score: {}", s, score);
+    }
+}
+
+use std::fs;
+fn set_1_4(file_name: &str) {
+    // input: ../inputs/1.4.txt
+    // output: Now that the party is jumping
+    let input = fs::read_to_string(file_name).unwrap();
+
+    let mut all_cands: Vec<Vec<(usize, i16, String)>> = Vec::new();
+    let mut idx : usize = 0;
+    for line in input.split_whitespace() {
+        // println!("{}", line);
+        // TODO maybe use an Rc to avoid the clone here
+        all_cands.push(cryptopals::xor_top_n(line, 5).iter().map(|(s, st)| (idx, *s, st.clone())).collect::<Vec<_>>());
+        idx += 1;
+    }
+
+    let mut flattened : Vec<(usize, i16, String)> = all_cands.into_iter().flatten().collect();
+
+    flattened.sort_by(|(_, s1, _), (_, s2, _)| s2.cmp(&s1));
+
+    for i in 0..5 {
+        let (idx, score, s) = &flattened[i];
+        println!("{} -- score: {}, line: {}", s, score, idx);
     }
 }
 
@@ -25,5 +50,6 @@ fn main() {
 
     let input = &args[1];
 
-    set_1_3(input);
+    // set_1_3(input);
+    set_1_4(input);
 }
