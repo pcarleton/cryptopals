@@ -77,7 +77,7 @@ pub fn hex_to_b64(input: &str) -> Result<String> {
     Ok(base64::encode(bin))
 }
 
-pub fn char_count(input: &str) -> Result<HashMap<char, u16>> {
+pub fn char_count(input: &str) -> HashMap<char, u16> {
 
     let mut counter = HashMap::new();
 
@@ -89,20 +89,74 @@ pub fn char_count(input: &str) -> Result<HashMap<char, u16>> {
     }
     
 
-    Ok(counter)
+    counter
+}
+
+fn score_str(input: &str) -> u16 {
+    let counter = char_count(input);
+    let score = score_count(&counter);
+
+    score
+}
+
+fn score_count(counter: &HashMap<char, u16>) -> u16 {
+    let mut score = 0 as u16;
+
+    for (c, c_count) in counter {
+        let i_score = match c {
+            'e' => 12,
+            't' => 9,
+            'a' => 8,
+            'o' => 7,
+            'i' => 7,
+            'n' => 6,
+            's' => 6,
+            'r' => 6,
+            'h' => 5,
+            'd' => 4,
+            'l' => 3,
+            'u' => 2,
+            'c' => 2,
+            'm' => 2,
+            'f' => 2,
+            'y' => 2,
+            'w' => 2,
+            'g' => 2,
+            'p' => 1,
+            'b' => 1,
+            'v' => 1,
+            'k' => 0,
+            'x' => 0,
+            'q' => 0,
+            'j' => 0,
+            'z' => 0,
+            _ => 0,
+        };
+
+        score += i_score * c_count;
+    }
+
+    score
 }
 
 
 #[cfg(test)]
 mod tests {
-    use super::{hex_to_bin, hex_to_b64, bytes_to_hex, xor, char_count};
+    use super::{hex_to_bin, hex_to_b64, bytes_to_hex, xor, char_count, score_str};
+
+    #[test]
+    fn test_score_str() {
+        assert_eq!(score_str(&"e"), 12);
+
+        assert_eq!(score_str(&"zz  z;;;$$"), 0);
+    }
 
     #[test]
     fn test_char_count() {
-        let count = char_count("aaaaa").unwrap();
+        let count = char_count("aaaaa");
         assert_eq!(count.get(&'a'), Some(&(5 as u16)));
 
-        let count2 = char_count("Aaaabb").unwrap();
+        let count2 = char_count("Aaaabb");
         assert_eq!(count2.get(&'a'), Some(&(4 as u16)));
         assert_eq!(count2.get(&'b'), Some(&(2 as u16)));
     }
