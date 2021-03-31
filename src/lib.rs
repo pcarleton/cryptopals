@@ -108,7 +108,7 @@ fn score_count(counter: &HashMap<char, i16>) -> i16 {
 
     for (c, c_count) in counter {
         let i_score = match c {
-            'e' => 12,
+            'e' => 10, // was 12
             't' => 9,
             'a' => 8,
             'o' => 8,
@@ -134,7 +134,7 @@ fn score_count(counter: &HashMap<char, i16>) -> i16 {
             'q' => 0,
             'j' => 0,
             'z' => 0,
-            ' ' => 0,
+            ' ' => 2,
             // These are pretty arbitrary
             '&' => -2,
             '@' => -2,

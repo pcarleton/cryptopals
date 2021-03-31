@@ -1,10 +1,6 @@
 use std::env;
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    let input = &args[1];
-
+fn set_1_3(input: &str) {
     let mut candidates: Vec<String> = Vec::new();
     for c in 0..127 {
         let cand = cryptopals::single_xor(input, c as u8);
@@ -20,4 +16,12 @@ fn main() {
         let (score, s) = ranked[i];
         println!("{} -- score: {}", s, score);
     }
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let input = &args[1];
+
+    set_1_3(input);
 }
