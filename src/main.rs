@@ -6,8 +6,11 @@ fn main() {
     let input = &args[1];
 
 
-    //for 'a'..'z' {
-
-    let output = cryptopals::hex_to_b64(input).unwrap();
-    println!("{}", output);
+    for c in 0..127 {
+        let cand = cryptopals::single_xor(input, c as u8);
+        match cand {
+            Ok(s) => println!("{}", s),
+            Err(_) => println!("error on {}", c)
+        }
+    }
 }

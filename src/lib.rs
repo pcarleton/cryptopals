@@ -1,5 +1,6 @@
 extern crate base64;
 extern crate hex;
+use std::collections::HashMap;
 
 pub type Result<T> = std::result::Result<T, CryptoError>;
 
@@ -49,7 +50,9 @@ pub fn single_xor(a: &str, k: u8) -> Result<String> {
         result.push(a_hex[i] ^ k);
     }
 
-    Ok(bytes_to_hex(result))
+    let st = std::str::from_utf8(&result).map_err(|_| CryptoError::MismatchedInputLengths)?;
+
+    Ok(st.to_string())
 }
 
 pub fn hex_to_bin(input: &str) -> Result<Vec<u8>> {
@@ -74,9 +77,35 @@ pub fn hex_to_b64(input: &str) -> Result<String> {
     Ok(base64::encode(bin))
 }
 
+pub fn char_count(input: &str) -> Result<HashMap<char, u16>> {
+
+    let mut counter = HashMap::new();
+
+    for c in input.chars() {
+        for lc in c.to_lowercase() {
+            let count = counter.entry(lc).or_insert(0);
+            *count += 1;
+        }
+    }
+    
+
+    Ok(counter)
+}
+
+
 #[cfg(test)]
 mod tests {
-    use super::{hex_to_bin, hex_to_b64, bytes_to_hex, xor};
+    use super::{hex_to_bin, hex_to_b64, bytes_to_hex, xor, char_count};
+
+    #[test]
+    fn test_char_count() {
+        let count = char_count("aaaaa").unwrap();
+        assert_eq!(count.get(&'a'), Some(&(5 as u16)));
+
+        let count2 = char_count("Aaaabb").unwrap();
+        assert_eq!(count2.get(&'a'), Some(&(4 as u16)));
+        assert_eq!(count2.get(&'b'), Some(&(2 as u16)));
+    }
 
     #[test]
     fn test_hex_to_bin() {
