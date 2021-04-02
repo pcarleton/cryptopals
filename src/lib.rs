@@ -190,30 +190,30 @@ mod tests {
 
     #[test]
     fn test_rank_strs() {
-        let input = vec!["etaoin", "zzzzz"];
+        let input = vec!["etaoin".to_owned(), "zzzzz".to_owned()];
 
-        let output = rank_strs(&input);
+        let output = rank_strs(input);
 
-        let (_, first) = output[0];
+        let (_, first) = &output[0];
 
         assert_eq!("etaoin", first);
     }
 
     #[test]
     fn test_score_str() {
-        assert_eq!(score_str(&"e"), 12);
+        assert_eq!(score_str(&"e"), 10);
 
-        assert_eq!(score_str(&"zz  z;;;$$"), 0);
+        assert_eq!(score_str(&"zz  z;;;$$"), -1);
     }
 
     #[test]
     fn test_char_count() {
         let count = char_count("aaaaa");
-        assert_eq!(count.get(&'a'), Some(&(5 as u16)));
+        assert_eq!(count.get(&'a'), Some(&(5 as i16)));
 
         let count2 = char_count("Aaaabb");
-        assert_eq!(count2.get(&'a'), Some(&(4 as u16)));
-        assert_eq!(count2.get(&'b'), Some(&(2 as u16)));
+        assert_eq!(count2.get(&'a'), Some(&(4 as i16)));
+        assert_eq!(count2.get(&'b'), Some(&(2 as i16)));
     }
 
     #[test]
