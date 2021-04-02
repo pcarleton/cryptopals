@@ -136,7 +136,7 @@ fn ranked_candidates<'a>(input: &'a str) -> Vec<(i16, String)> {
         let cand = single_xor(input, c as u8);
         match cand {
             Ok(s) => candidates.push(s),
-            Err(e) => (), //println!("error on {}: {:?}", c, e),
+            Err(_e) => (), //println!("error on {}: {:?}", c, e),
         }
     }
 
