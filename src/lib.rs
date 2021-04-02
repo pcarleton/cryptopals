@@ -10,6 +10,7 @@ pub enum CryptoError {
     OddHexStringLength(usize),
     MismatchedInputLengths,
     Utf8(std::str::Utf8Error),
+    NoneError,
 }
 
 fn ascii_to_bin(i: u8) -> Result<u8> {
@@ -51,6 +52,20 @@ pub fn single_xor(a: &str, k: u8) -> Result<String> {
     let st = std::str::from_utf8(&result).map_err(|e| CryptoError::Utf8(e))?;
 
     Ok(st.to_owned())
+}
+
+pub fn encrypt_repeating_xor(a: &str, key: &str) -> Result<String> {
+    let mut result: Vec<u8> = Vec::new();
+    let key_bytes = key.as_bytes();
+    let mut key_iter = (0..key_bytes.len()).cycle();
+    for b in a.as_bytes() {
+        let idx = key_iter.next().ok_or(CryptoError::NoneError)?;
+        result.push(b ^ key_bytes[idx]);
+    }
+
+    // let st = std::str::from_utf8(&result).map_err(|e| CryptoError::Utf8(e))?;
+
+    Ok(bytes_to_hex(result))
 }
 
 pub fn hex_to_bin(input: &str) -> Result<Vec<u8>> {
@@ -186,7 +201,19 @@ fn score_count(counter: &HashMap<char, i16>) -> i16 {
 
 #[cfg(test)]
 mod tests {
-    use super::{bytes_to_hex, char_count, hex_to_b64, hex_to_bin, rank_strs, score_str, xor};
+    use super::*;
+
+    #[test]
+    fn test_repeated_xor() {
+        let text = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal";
+        let key = "ICE";
+        let expected =
+            "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f";
+
+        let output = encrypt_repeating_xor(text, key).unwrap();
+
+        assert_eq!(expected, output);
+    }
 
     #[test]
     fn test_rank_strs() {

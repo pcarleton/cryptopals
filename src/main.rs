@@ -28,32 +28,14 @@ fn set_1_4(file_name: &str) {
 
     let mut all_cands: Vec<(usize, i16, String)> = Vec::new();
     let mut idx: usize = 0;
-    // for line in input.split_whitespace() {
-    //     // println!("{}", line);
-    //     // TODO maybe use an Rc to avoid the clone here
-    //     all_cands.push(
-    //         cryptopals::xor_top_n(line, 5)
-    //             .iter()
-    //             .map(|(s, st)| (idx, *s, *st))
-    //             .collect::<Vec<_>>(),
-    //     );
-    //     idx += 1;
-    // }
 
-    // let lines: Vec<&str> = input.split_whitespace().collect();
-    // for i in 0..lines.len() {
     for line in input.split_whitespace() {
-        // println!("{}", line);
-        // TODO maybe use an Rc to avoid the clone here
-        // let line = lines[i];
         let mut ranked = cryptopals::xor_top_n(line, 5);
         while let Some((score, st)) = ranked.pop() {
             all_cands.push((idx, score, st));
         }
         idx += 1;
     }
-
-    // let mut flattened: Vec<(usize, i16, &String)> = all_cands.into_iter().flatten().collect();
 
     all_cands.sort_by(|(_, s1, _), (_, s2, _)| s2.cmp(&s1));
 
@@ -63,11 +45,18 @@ fn set_1_4(file_name: &str) {
     }
 }
 
+fn set_1_5(text: &str, key: &str) {
+    println!("{}", cryptopals::encrypt_repeating_xor(text, key).unwrap());
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
     let input = &args[1];
 
     // set_1_3(input);
-    set_1_4(input);
+    // set_1_4(input);
+
+    let input2 = &args[2];
+    set_1_5(input, input2);
 }
