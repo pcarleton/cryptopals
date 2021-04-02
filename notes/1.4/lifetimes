@@ -1,1 +1,27 @@
 https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html
+
+
+I had some issues with lifetimes when trying to generate strings and then pass them back.
+
+Initially, I was creating vectors of references, but the String's they were referencing were created inside an inner function, so they went out of scope.  Instead, I needed to pass ownership up.
+
+I eventually did some `.clone` in order to take ownership of a copy, but there's probably a way to avoid that.
+
+I also considered using an `Rc` (smart pointer w/ reference counting) so that I could not worry as much about ownership.
+
+
+
+
+## Option 1: Rc
+
+## Option 2: References in more places
+
+The issue is that I'm actually creating a String in the `single_xor` method, but it's sort of a reference... because it references the underlying bytes.
+
+Maybe to_owned is what I want?
+no, that just clones: https://doc.rust-lang.org/std/borrow/trait.ToOwned.html
+
+transmute?
+
+It seems like to_owned is fine:
+https://stackoverflow.com/questions/31331356/how-to-create-a-string-directly
