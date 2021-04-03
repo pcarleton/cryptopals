@@ -30,3 +30,16 @@ For each block, the single-byte XOR key that produces the best looking histogram
 
 This code is going to turn out to be surprisingly useful later on. Breaking repeating-key XOR ("Vigenere") statistically is obviously an academic exercise, a "Crypto 101" thing. But more people "know how" to break it than can actually break it, and a similar technique breaks something much more important.
 
+
+## Notes
+
+Hamming Distance
+
+https://en.wikipedia.org/wiki/Hamming_distance
+
+XOR gives you the bits that are different
+
+Hamming weight gives you the number of 1 bits in a value.
+
+Wegner way:
+while val > 0: sum++; val = val & (val - 1);

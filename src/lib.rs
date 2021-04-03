@@ -68,6 +68,36 @@ pub fn encrypt_repeating_xor(a: &str, key: &str) -> Result<String> {
     Ok(bytes_to_hex(result))
 }
 
+pub fn hamming_distance(a: &[u8], b: &[u8]) -> Result<u32> {
+    if a.len() != b.len() {
+        return Err(CryptoError::MismatchedInputLengths);
+    }
+
+    let mut dist = 0;
+
+    for i in 0..a.len() {
+        dist += hamming_distance_single(a[i], b[i]);
+    }
+
+    Ok(dist)
+}
+
+pub fn hamming_distance_single(a: u8, b: u8) -> u32 {
+    hamming_weight(a ^ b)
+}
+
+fn hamming_weight(i: u8) -> u32 {
+    let mut sum = 0;
+    let mut val = i;
+    while val > 0 {
+        // println!("{:b} & {:b} = {:b}", val, val - 1, val & (val - 1));
+        sum += 1;
+        val = val & (val - 1);
+    }
+
+    sum
+}
+
 pub fn hex_to_bin(input: &str) -> Result<Vec<u8>> {
     let mut output: Vec<u8> = Vec::new();
 
@@ -202,6 +232,25 @@ fn score_count(counter: &HashMap<char, i16>) -> i16 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_hamming_distance() {
+        assert_eq!(1, hamming_distance(&[0b101], &[0b001]).unwrap());
+
+        assert_eq!(
+            2,
+            hamming_distance(&[0b0, 0b111, 0b1101], &[0b0, 0b110, 0b1111]).unwrap()
+        );
+    }
+
+    #[test]
+    fn test_hamming_weight() {
+        assert_eq!(1, hamming_weight(0b10));
+
+        assert_eq!(1, hamming_weight(0b1000));
+        assert_eq!(3, hamming_weight(0b10101));
+        assert_eq!(1, hamming_weight(0b1));
+    }
 
     #[test]
     fn test_repeated_xor() {
