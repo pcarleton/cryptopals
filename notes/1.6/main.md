@@ -43,3 +43,12 @@ Hamming weight gives you the number of 1 bits in a value.
 
 Wegner way:
 while val > 0: sum++; val = val & (val - 1);
+
+It works becaase if there's a 1 in the last place, it eats that 1.
+
+IF there's not a 1... then:
+
+110 & 101 = 100 so it still eats it.
+
+
+110000 & 10111 = 100000, so still works, regardless of what's happening, it will eat up until the least significant 1.

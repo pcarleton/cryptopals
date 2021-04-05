@@ -49,6 +49,12 @@ fn set_1_5(text: &str, key: &str) {
     println!("{}", cryptopals::encrypt_repeating_xor(text, key).unwrap());
 }
 
+fn set_1_6(file_name: &str) {
+    let encrypted = str::replace(&fs::read_to_string(file_name).unwrap(), "\n", "");
+
+    println!("{}", encrypted);
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -57,6 +63,8 @@ fn main() {
     // set_1_3(input);
     // set_1_4(input);
 
-    let input2 = &args[2];
-    set_1_5(input, input2);
+    // let input2 = &args[2];
+    // set_1_5(input, input2);
+
+    set_1_6(input);
 }
